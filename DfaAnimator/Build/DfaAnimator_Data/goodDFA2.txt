@@ -1,0 +1,19 @@
+{ 
+		"states":["q0","q1","q2","q3","q4"], 
+		"initial":"q0", 
+		"final":["q1","q2"],
+		"alphabet":["a","b"],
+		"strings":["aba","bab","bbba","","b"]
+}
+"transitions":[
+	{
+		"character":"a",
+		"from":["q0","q1","q2","q3","q4"],
+		"to":["q1","q1","q4","q1","q4"]
+	},
+	{
+		"character":"b",
+		"from":["q0","q1","q2","q3","q4"],
+		"to":["q2","q3","q2","q3","q2"]
+	}
+]
