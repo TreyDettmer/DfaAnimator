@@ -1,6 +1,0 @@
-Input: "aba"  Result: Reject
-Input: "aba"  Result: Reject
-Input: "aba"  Result: Reject
-Input: "bab"  Result: Reject
-Input: "bab"  Result: Reject
-Input: "bbba"  Result: Reject

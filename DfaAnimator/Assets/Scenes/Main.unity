@@ -1345,6 +1345,7 @@ MonoBehaviour:
   currentWordIndex: 0
   currentWord: 
   inputFile: sampleDfa.json.txt
+  inputJson: 
   outputFile: 
   dfa: {fileID: 0}
   states: []
@@ -1439,7 +1440,7 @@ Transform:
   m_GameObject: {fileID: 1161011114}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 200}
-  m_LocalScale: {x: 2100, y: 2100, z: 10}
+  m_LocalScale: {x: 21000, y: 21000, z: 10}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
@@ -2080,7 +2081,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1128080485}
         m_TargetAssemblyTypeName: ProgramManager, Assembly-CSharp
-        m_MethodName: MoveToNextWord
+        m_MethodName: MoveToNextWprd
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

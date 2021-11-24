@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
-// The base for this code is from from https://forum.unity.com/threads/easy-curved-line-renderer-free-utility.391219/
+// The base for this code is from https://forum.unity.com/threads/easy-curved-line-renderer-free-utility.391219/
 
 [RequireComponent(typeof(LineRenderer))]
 public class CurvedLineRenderer : MonoBehaviour
 {
-	//PUBLIC
+
 	public float lineSegmentSize = 0.15f;
 	public float lineWidth = 0.1f;
 	public Transform source;
@@ -17,10 +17,7 @@ public class CurvedLineRenderer : MonoBehaviour
 	public TextMeshPro textMesh;
 	public GameObject curvedLinePointPrefab;
 	public Transform arrowheadTransform;
-	[Header("Gizmos")]
-	public bool showGizmos = true;
-	public float gizmoSize = 0.1f;
-	public Color gizmoColor = new Color(1, 0, 0, 0.5f);
+
 	public Vector3[] smoothedPoints;
 	//PRIVATE
 	private CurvedLinePoint[] linePoints = new CurvedLinePoint[0];
@@ -35,16 +32,18 @@ public class CurvedLineRenderer : MonoBehaviour
 	// Update is called once per frame
 	public void Update()
 	{
-		GetPoints();
+		SetPoints();
 		SetPointsToLine();
 		if (name == "initial")
         {
+			// the intial state's arrow has no characters
 			return;
         }
-		else if (source.parent.name != destination.name)
+		else if (source.parent.name != destination.name) // not a self loop
 		{
+			// this code calculates the position and rotation of the characters for this transition
+
 			Vector3 midPoint3D = Vector3.Lerp(source.position, destination.position, 0.5f);
-			Vector2 midPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, midPoint3D);
 			Vector2 sourcePoint = RectTransformUtility.WorldToScreenPoint(Camera.main, source.position);
 			Vector2 destinationPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, destination.position);
 
@@ -65,10 +64,11 @@ public class CurvedLineRenderer : MonoBehaviour
 			textMesh.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, textAngle);
 			textMesh.GetComponent<RectTransform>().position = midPoint3D + new Vector3(textOffset.x,textOffset.y,0);
 		}
-		else
+		else // self loop
         {
+			// this code calculates the position and rotation of the characters for this transition
+
 			Vector3 midPoint3D = linePoints[2].transform.position + new Vector3(7,0,0);
-			Vector2 midPoint = RectTransformUtility.WorldToScreenPoint(Camera.main, midPoint3D);
 			Vector2 linePoint1 = RectTransformUtility.WorldToScreenPoint(Camera.main, linePoints[1].transform.position);
 			Vector2 linePoint3 = RectTransformUtility.WorldToScreenPoint(Camera.main, linePoints[3].transform.position);
 
@@ -78,26 +78,32 @@ public class CurvedLineRenderer : MonoBehaviour
 		}
 	}
 
-	void GetPoints()
+	void SetPoints()
 	{
 		//find curved points in children
 		linePoints = GetComponentsInChildren<CurvedLinePoint>();
 		if (name == "initial")
 		{
+			//update the points on the path
 			linePoints[0].transform.position = source.position;
 			linePoints[1].transform.position = Vector3.Lerp(source.position,destination.position,.5f);
 			linePoints[2].transform.position = destination.position;
+
+			// set arrowhead position and rotation
 			Vector3 arrowHeadOffset = (linePoints[2].transform.position - linePoints[1].transform.position).normalized * -8;
 			arrowheadTransform.position = linePoints[2].transform.position + arrowHeadOffset + (Vector3.back * 10);
 			arrowheadTransform.rotation = Quaternion.Euler(0, 0, 180);
 		}
-		else if (source.parent.name == destination.name)
+		else if (source.parent.name == destination.name) // self loop
         {
+			//update the points on the path
 			linePoints[0].transform.position = source.position;
 			linePoints[1].transform.position = source.position + new Vector3(5, 8, 0);
 			linePoints[2].transform.position = source.position + new Vector3(15, 0, 0);
 			linePoints[3].transform.position = source.position + new Vector3(5, -8, 0);
 			linePoints[4].transform.position = source.position;
+
+			// set arrowhead position and rotation
 			Vector3 arrowHeadOffset = (linePoints[4].transform.position - linePoints[3].transform.position).normalized * -8;
 			Vector2 linePoint3 = RectTransformUtility.WorldToScreenPoint(Camera.main, linePoints[1].transform.position);
 			Vector2 linePoint4 = RectTransformUtility.WorldToScreenPoint(Camera.main, linePoints[2].transform.position);
@@ -108,19 +114,21 @@ public class CurvedLineRenderer : MonoBehaviour
 		}
 		else
         {
+			//update the points on the path
 			linePoints[0].transform.position = source.position;
 
-
+			// the middle point is slightly offset to make the path curved
 			Vector3 offset = Vector3.Cross(destination.position - source.position, Vector3.forward).normalized * 5f;
-
-
 			linePoints[1].transform.position = Vector3.Lerp(source.position, destination.position, 0.5f) + offset;
+
 			linePoints[2].transform.position = destination.position;
+
+			// set arrowhead position and rotation
 			Vector3 arrowHeadOffset = (linePoints[2].transform.position - linePoints[1].transform.position).normalized * -8;
 			Vector2 linePoint1 = RectTransformUtility.WorldToScreenPoint(Camera.main, linePoints[1].transform.position);
 			Vector2 linePoint2 = RectTransformUtility.WorldToScreenPoint(Camera.main, linePoints[2].transform.position);
-			
 			float angle = ((Mathf.Atan2(linePoint2.y - linePoint1.y, linePoint2.x - linePoint1.x)) * 180f / Mathf.PI) - 180;
+
 			arrowheadTransform.position = linePoints[2].transform.position + arrowHeadOffset + (Vector3.back * 10);
 			arrowheadTransform.rotation = Quaternion.Euler(0, 0, angle);
 
@@ -170,6 +178,10 @@ public class CurvedLineRenderer : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Add a character to the list of characters represented by this path
+	/// </summary>
+	/// <param name="newCharacter">the character to add</param>
 	public void UpdateCharacters(string newCharacter)
 	{
 		characters.Add(newCharacter);
@@ -192,24 +204,4 @@ public class CurvedLineRenderer : MonoBehaviour
 		Instantiate(curvedLinePointPrefab, transform);	
     }
 
-	//void OnDrawGizmosSelected()
-	//{
-	//	Update();
-	//}
-
-	//void OnDrawGizmos()
-	//{
-	//	if (linePoints.Length == 0)
-	//	{
-	//		GetPoints();
-	//	}
-
-	//	//settings for gizmos
-	//	foreach (CurvedLinePoint linePoint in linePoints)
-	//	{
-	//		linePoint.showGizmo = showGizmos;
-	//		linePoint.gizmoSize = gizmoSize;
-	//		linePoint.gizmoColor = gizmoColor;
-	//	}
-	//}
 }

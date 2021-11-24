@@ -14,11 +14,6 @@ public class Dfa : MonoBehaviour
         
     }
 
-    public void Initialize()
-    {
-
-    }
-
     public void Read(string word)
     {
         if (!isSimulating)
@@ -38,7 +33,6 @@ public class Dfa : MonoBehaviour
         if (currentState == null)
         {
             StartCoroutine(ProgramManager.instance.DisplayError("DFA has no initial state."));
-            Debug.LogError("DFA has no initial state.");
 
         }
         else
@@ -53,7 +47,7 @@ public class Dfa : MonoBehaviour
                     StartCoroutine(ProgramManager.instance.DisplayError("Got a null state."));
                     Debug.LogError("Got a null state.");
                 }
-                CurvedLineRenderer curvedLineRenderer = currentState.GetLineRenderer(nextState);
+                CurvedLineRenderer curvedLineRenderer = currentState.GetPathToState(nextState);
                
                 StartCoroutine(ProgramManager.instance.AnimateTransition(letterIndex, curvedLineRenderer));
                 yield return new WaitForSeconds(2f);
@@ -64,12 +58,6 @@ public class Dfa : MonoBehaviour
             FileSaver.instance.SaveOutput(word, currentState.isAccepting);
         }
         isSimulating = false;
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
         
     }
 }

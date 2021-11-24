@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// this code is taken from https://forum.unity.com/threads/implement-a-drag-and-drop-script-with-c.130515/
+
 [RequireComponent(typeof(Renderer))]
 class DragTransform : MonoBehaviour
 {
@@ -9,24 +11,7 @@ class DragTransform : MonoBehaviour
     private Color originalColor = Color.yellow;
     private bool dragging = false;
     private float distance;
-    private Renderer renderer;
     private Vector3 startDist;
-
-    private void Start()
-    {
-        renderer = GetComponent<Renderer>();
-    }
-
-
-    void OnMouseEnter()
-    {
-        
-    }
-
-    void OnMouseExit()
-    {
-        
-    }
 
     void OnMouseDown()
     {
@@ -35,13 +20,13 @@ class DragTransform : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Vector3 rayPoint = ray.GetPoint(distance);
         startDist = transform.position - rayPoint;
-        renderer.material.color = mouseOverColor;
+        GetComponent<Renderer>().material.color = mouseOverColor;
     }
 
     void OnMouseUp()
     {
         dragging = false;
-        renderer.material.color = originalColor;
+        GetComponent<Renderer>().material.color = originalColor;
     }
 
     void Update()

@@ -16,15 +16,13 @@ public class State : MonoBehaviour
     public List<CurvedLineRenderer> childLineRenderers;
     public Transform initialArrowTransform;
     public Mesh acceptingStateMesh;
-    private bool isOverlappingState = false;
-    public Material yellowMaterial;
-    public Material redMaterial;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+   
 
+    /// <summary>
+    /// Initializes the state
+    /// </summary>
+    /// <param name="isAccepting">whether this state is an accepting state</param>
+    /// <param name="isInitial">whether this state is a rejecting state</param>
     public void Initialize(bool isAccepting, bool isInitial)
     {
         this.isAccepting = isAccepting;
@@ -33,6 +31,7 @@ public class State : MonoBehaviour
         pathsVisualizer = new List<string>();
         label.text = name;
         childLineRenderers = new List<CurvedLineRenderer>();
+
         if (isAccepting)
         {
             GetComponent<MeshFilter>().mesh = acceptingStateMesh;
@@ -40,7 +39,7 @@ public class State : MonoBehaviour
 
         if (isInitial)
         {
-
+            // add the path going into the initial state
             CurvedLineRenderer child = Instantiate(curvedLineRendererObject, transform).GetComponent<CurvedLineRenderer>();
             child.name = "initial";
             child.source = initialArrowTransform;
@@ -48,15 +47,20 @@ public class State : MonoBehaviour
         }
     }
 
-    public State Read(string word)
+    /// <summary>
+    /// Reads a given character and returns the state to transition to
+    /// </summary>
+    /// <param name="character">the character to read</param>
+    /// <returns>the state to transition to</returns>
+    public State Read(string character)
     {
-        if (word.Equals(""))
+        if (character.Equals(""))
         {
             return this;
         }
         foreach ((State,string) path in paths)
         {
-            if (path.Item2.Equals(word))
+            if (path.Item2.Equals(character))
             {
                 return path.Item1;
             }
@@ -64,6 +68,11 @@ public class State : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// Adds a transition from this state to the provided state on the provided character
+    /// </summary>
+    /// <param name="state">the state to transition to</param>
+    /// <param name="character">the character for this transition</param>
     public void AddPath(State state, string character)
     {
         paths.Add((state, character));
@@ -99,57 +108,14 @@ public class State : MonoBehaviour
 
     }
     /// <summary>
-    /// Returns the curved line renderer to the given state
+    /// Returns the path to the given state
     /// </summary>
     /// <param name="destinationState">the state being transitioned to</param>
-    /// <returns></returns>
-    public CurvedLineRenderer GetLineRenderer(State destinationState)
+    /// <returns>the path to the given state</returns>
+    public CurvedLineRenderer GetPathToState(State destinationState)
     {
         return childLineRenderers.Find(child => child.name.Contains(destinationState.name));
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, 8f);
-        if (hits.Length > 0)
-        {
-            for (int i = 0; i < hits.Length; i++)
-            {
-                if (hits[i].gameObject != gameObject)
-                {
-                    if (!isOverlappingState)
-                    {
-                        isOverlappingState = true;
-                        StartCoroutine(Flash());
-                    }
-                    break;
-                }
-            }
-        }
 
-    }
-
-
-    private void OnTriggerExit(Collider other)
-    {
-
-        isOverlappingState = false;
-        GetComponent<MeshRenderer>().material = yellowMaterial;
-        
-
-    }
-
-    IEnumerator Flash()
-    {
-        while (isOverlappingState)
-        {
-            GetComponent<MeshRenderer>().material = redMaterial;
-            yield return new WaitForSeconds(.25f);
-            GetComponent<MeshRenderer>().material = yellowMaterial;
-            yield return new WaitForSeconds(.25f);
-
-        }
-        yield return null;
-    }
 }
