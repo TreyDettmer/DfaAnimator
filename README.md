@@ -2,3 +2,5 @@
 ## Final Project for my Theory of Computation Course
 
 ### To Run, open the DfaAnimator/Build folder and run the DfaAnimator.exe file.
+
+![GIF of the application running](DfaAnimator/demo.gif)
