@@ -1,6 +1,6 @@
 # DFA Animator
 ## Final Project for my Theory of Computation Course
-
-### To Run, open the DfaAnimator/Build folder and run the DfaAnimator.exe file.
+### Play the web version at https://calicospartan.itch.io/dfa-animator
+### To Run the desktop version, open the DfaAnimator/Build folder and run the DfaAnimator.exe file.
 
 ![GIF of the application running](DfaAnimator/demo.gif)
